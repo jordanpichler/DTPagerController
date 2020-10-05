@@ -17,13 +17,14 @@ public protocol DTSegmentedControlProtocol {
     func setTitle(_ title: String?, forSegmentAt segment: Int)
 
     func setImage(_ image: UIImage?, forSegmentAt segment: Int)
-    
+
+    func setBackgroundColor(_ color: UIColor)
+
     func setTitleTextAttributes(_ attributes: [NSAttributedString.Key : Any]?, for state: UIControl.State)
-    
+
 }
 
-open class DTSegmentedControl: UISegmentedControl, DTSegmentedControlProtocol {    
-
+open class DTSegmentedControl: UISegmentedControl, DTSegmentedControlProtocol {
     public override init(items: [Any]?) {
         super.init(items: items)
         commonInit()
@@ -44,12 +45,29 @@ open class DTSegmentedControl: UISegmentedControl, DTSegmentedControlProtocol {
         setDividerImage(UIImage(), forLeftSegmentState: UIControl.State(), rightSegmentState: UIControl.State.selected, barMetrics: UIBarMetrics.default)
         setDividerImage(UIImage(), forLeftSegmentState: UIControl.State.selected, rightSegmentState: UIControl.State(), barMetrics: UIBarMetrics.default)
     }
-    
+
     private func setTintColor(_ color: UIColor) {
         if #available(iOS 13.0, *) {
             selectedSegmentTintColor = color
         } else {
             tintColor = color
         }
+    }
+
+    public func setBackgroundColor(_ color: UIColor) {
+        setBackgroundImage(UIImage(color: color), for: .normal, barMetrics: .default)
+    }
+}
+
+extension UIImage {
+    convenience init(color: UIColor, size: CGSize = CGSize(width: 1, height: 32)) {
+        UIGraphicsBeginImageContextWithOptions(size, false, 1)
+        color.set()
+        let ctx = UIGraphicsGetCurrentContext()!
+        ctx.fill(CGRect(origin: .zero, size: size))
+        let image = UIGraphicsGetImageFromCurrentImageContext()!
+        UIGraphicsEndImageContext()
+
+        self.init(data: image.pngData()!)!
     }
 }
